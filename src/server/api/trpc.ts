@@ -6,7 +6,8 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { getAuth } from "@clerk/nextjs/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -45,8 +46,16 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
+  const { req } = opts;
+  const session = getAuth(req);
+
+  const userId = session.userId;
+
+  return {
+    ...createInnerTRPCContext({}),
+    currentUserId: userId,
+  };
 };
 
 /**
@@ -93,3 +102,23 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
+  console.log("CONTEXT", ctx);
+
+  if (!ctx.currentUserId) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "User not logged in",
+    });
+  }
+
+  return next({
+    ctx: {
+      // ...ctx,
+      currentUserId: ctx.currentUserId,
+    },
+  });
+});
+
+export const privateProcedure = t.procedure.use(enforceUserIsAuthed);

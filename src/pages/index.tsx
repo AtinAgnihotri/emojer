@@ -1,7 +1,6 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
-import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 import { RouterOutputs, api } from "~/utils/api";
 
@@ -12,19 +11,45 @@ import { LoadingPage, LoadingSpinner } from "~/components/Loading";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
+  const [input, setInput] = useState("");
+  const ctx = api.useContext();
   const { user } = useUser();
+  const { mutate, isError, isLoading } = api.posts.createPost.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.posts.getAll.invalidate();
+    },
+  });
 
   if (!user) return null;
 
-  console.log("USER ID", user.id);
+  if (isError) return <div>Something went wrong!</div>;
 
   return (
     <div className="flex w-full gap-3">
       <UserImage url={user.imageUrl} userName={user.username} />
-      <input
-        placeholder="Type some emojis!"
-        className="grow bg-transparent outline-none"
-      />
+      {isLoading ? (
+        <LoadingSpinner size={40} />
+      ) : (
+        <>
+          <input
+            placeholder="Type some emojis!"
+            className="grow bg-transparent outline-none"
+            value={input}
+            onChange={(e) => {
+              e.preventDefault();
+              setInput(e.target.value);
+            }}
+          />
+          <button
+            onClick={() => {
+              mutate({ content: input });
+            }}
+          >
+            Post
+          </button>
+        </>
+      )}
     </div>
   );
 };
@@ -40,7 +65,7 @@ const PostView: React.FC<PostWithUser> = ({ post, author }) => {
           <span>@{author.name}</span>
           <span>{`· ${dayjs(post.createdAt).fromNow()}`}</span>
         </div>
-        <span className="">{post.content}</span>
+        <span className="pt-1 text-2xl">{post.content}</span>
       </div>
     </div>
   );
