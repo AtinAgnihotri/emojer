@@ -26,7 +26,8 @@ export const postsRouter = createTRPCRouter({
     return posts.map((post) => {
       const author = users.find((user) => user.id === post.authorId);
 
-      if (!author)
+      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+      if (!author || !author.name)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Author for Post not found",
@@ -34,7 +35,10 @@ export const postsRouter = createTRPCRouter({
 
       return {
         post,
-        author,
+        author: {
+          ...author,
+          name: author.name,
+        },
       };
     });
   }),

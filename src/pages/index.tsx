@@ -6,16 +6,23 @@ import React from "react";
 
 import { RouterOutputs, api } from "~/utils/api";
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import Image from "next/image";
+dayjs.extend(relativeTime);
+
 const UserImage: React.FC<{ url: string; userName: string | null }> = ({
   url,
   userName,
 }) => {
   if (!url) return null;
   return (
-    <img
+    <Image
       src={url}
       alt={`${userName}-profile-image`}
       className="h-16 w-16 rounded-full"
+      width="64"
+      height="64"
     />
   );
 };
@@ -44,7 +51,13 @@ const PostView: React.FC<PostWithUser> = ({ post, author }) => {
   return (
     <div className="flex flex-row items-center border-b border-slate-400 p-8 ">
       <UserImage url={author.profilePicture} userName={author.name} />
-      <div className="pl-4">{post.content}</div>
+      <div className="flex flex-col pl-4">
+        <div className="flex gap-1">
+          <span>@{author.name}</span>
+          <span>{`· ${dayjs(post.createdAt).fromNow()}`}</span>
+        </div>
+        <span className="">{post.content}</span>
+      </div>
     </div>
   );
 };
