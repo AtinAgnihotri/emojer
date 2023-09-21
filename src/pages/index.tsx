@@ -45,8 +45,9 @@ const CreatePostWizard = () => {
             onClick={() => {
               mutate({ content: input });
             }}
+            disabled={isLoading}
           >
-            Post
+            {isLoading ? "Posting" : "Post"}
           </button>
         </>
       )}
