@@ -53,7 +53,7 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
   const userId = session.userId;
 
   return {
-    ...createInnerTRPCContext({}),
+    db,
     currentUserId: userId,
   };
 };
@@ -104,8 +104,6 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
-  console.log("CONTEXT", ctx);
-
   if (!ctx.currentUserId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -115,7 +113,6 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
 
   return next({
     ctx: {
-      // ...ctx,
       currentUserId: ctx.currentUserId,
     },
   });
