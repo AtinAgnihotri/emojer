@@ -1,5 +1,4 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import { Post } from "@prisma/client";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
@@ -8,7 +7,6 @@ import { RouterOutputs, api } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import Image from "next/image";
 import { UserImage } from "~/components/Profile";
 import { LoadingPage, LoadingSpinner } from "~/components/Loading";
 dayjs.extend(relativeTime);
