@@ -9,23 +9,9 @@ import { RouterOutputs, api } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
+import { UserImage } from "~/components/Profile";
+import { LoadingPage } from "~/components/Loading";
 dayjs.extend(relativeTime);
-
-const UserImage: React.FC<{ url: string; userName: string | null }> = ({
-  url,
-  userName,
-}) => {
-  if (!url) return null;
-  return (
-    <Image
-      src={url}
-      alt={`${userName}-profile-image`}
-      className="h-16 w-16 rounded-full"
-      width="64"
-      height="64"
-    />
-  );
-};
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -65,9 +51,11 @@ const PostView: React.FC<PostWithUser> = ({ post, author }) => {
 export default function Home() {
   const user = useUser();
 
-  const { data, isLoading } = api.posts.getAll.useQuery();
+  const { data, isLoading: postLoaded } = api.posts.getAll.useQuery();
 
-  if (isLoading) return <div>Loading . . . </div>;
+  if (!user.isLoaded) return <LoadingPage />;
+
+  // if (isLoading) return <div>Loading . . . </div>;
 
   if (!data) return <div>Something Went Wrong!</div>;
 
