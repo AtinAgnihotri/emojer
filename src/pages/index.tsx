@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import { UserImage } from "~/components/Profile";
-import { LoadingPage } from "~/components/Loading";
+import { LoadingPage, LoadingSpinner } from "~/components/Loading";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
@@ -48,16 +48,29 @@ const PostView: React.FC<PostWithUser> = ({ post, author }) => {
   );
 };
 
+const PostsFeed = () => {
+  const { data, isLoading } = api.posts.getAll.useQuery();
+
+  if (!data && !isLoading) return <div>Something Went Wrong!</div>;
+
+  return (
+    <div className="flex h-full flex-col">
+      {isLoading && (
+        <div className="flex h-full w-full items-center justify-center">
+          <LoadingSpinner size={40} />
+        </div>
+      )}
+      {data?.map(({ post, author }) => (
+        <PostView post={post} author={author} key={post.id} />
+      ))}
+    </div>
+  );
+};
+
 export default function Home() {
   const user = useUser();
 
-  const { data, isLoading: postLoaded } = api.posts.getAll.useQuery();
-
   if (!user.isLoaded) return <LoadingPage />;
-
-  // if (isLoading) return <div>Loading . . . </div>;
-
-  if (!data) return <div>Something Went Wrong!</div>;
 
   return (
     <>
@@ -76,11 +89,7 @@ export default function Home() {
             {!!user.isSignedIn && <CreatePostWizard />}
             {user.isSignedIn ? <SignOutButton /> : <SignInButton />}
           </div>
-          <div className="flex flex-col">
-            {data?.map(({ post, author }) => (
-              <PostView post={post} author={author} key={post.id} />
-            ))}
-          </div>
+          {!!user.isSignedIn && <PostsFeed />}
         </div>
       </main>
     </>
