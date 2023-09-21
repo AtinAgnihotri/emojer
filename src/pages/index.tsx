@@ -30,28 +30,36 @@ const CreatePostWizard = () => {
   return (
     <div className="flex w-full gap-3">
       <UserImage url={user.imageUrl} userName={user.username} />
-      {isLoading ? (
-        <LoadingSpinner size={40} />
-      ) : (
-        <>
-          <input
-            placeholder="Type some emojis!"
-            className="grow bg-transparent outline-none"
-            value={input}
-            onChange={(e) => {
-              e.preventDefault();
-              setInput(e.target.value);
-            }}
-          />
-          <button
-            onClick={() => {
-              mutate({ content: input });
-            }}
-            disabled={isLoading}
-          >
-            {isLoading ? "Posting" : "Post"}
-          </button>
-        </>
+      <input
+        placeholder="Type some emojis!"
+        className="grow bg-transparent outline-none"
+        value={input}
+        onChange={(e) => {
+          e.preventDefault();
+          setInput(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          e.preventDefault();
+          if (e.key !== "Enter") return;
+          if (input === "") return;
+          mutate({ content: input });
+        }}
+        disabled={isLoading}
+      />
+      {input !== "" && !isLoading && (
+        <button
+          onClick={() => {
+            mutate({ content: input });
+          }}
+          disabled={isLoading}
+        >
+          {isLoading ? "Posting" : "Post"}
+        </button>
+      )}
+      {isLoading && (
+        <div className="flex items-center justify-center">
+          <LoadingSpinner size={20} />
+        </div>
       )}
     </div>
   );
@@ -105,8 +113,8 @@ export default function Home() {
         <meta name="description" content="Emojer (Dead Bird Clone)" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-screen justify-center">
-        <div className="w-full border-x border-slate-400 md:max-w-2xl">
+      <main className="flex h-full min-h-screen justify-center">
+        <div className="w-full flex-col border-x border-slate-400  md:max-w-2xl">
           <div
             className={`flex ${
               user.isSignedIn ? "justify-between" : "justify-center"
