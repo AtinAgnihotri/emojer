@@ -2,8 +2,8 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
 import React, { useState } from "react";
 
-import { RouterOutputs, api } from "~/utils/api";
-
+import { type RouterOutputs, api } from "~/utils/api";
+import { toast } from "react-hot-toast";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { UserImage } from "~/components/Profile";
@@ -14,16 +14,18 @@ const CreatePostWizard = () => {
   const [input, setInput] = useState("");
   const ctx = api.useContext();
   const { user } = useUser();
-  const { mutate, isError, isLoading } = api.posts.createPost.useMutation({
+  const { mutate, isLoading } = api.posts.createPost.useMutation({
     onSuccess: () => {
       setInput("");
       void ctx.posts.getAll.invalidate();
     },
+    onError: (e) => {
+      const errorMsgs = e.data?.zodError?.fieldErrors.content;
+      toast.error(errorMsgs?.[0] ?? "Failed to Emojee! Please try again later");
+    },
   });
 
   if (!user) return null;
-
-  if (isError) return <div>Something went wrong!</div>;
 
   return (
     <div className="flex w-full gap-3">
