@@ -73,7 +73,7 @@ type TUserPostsFeed = {
 };
 
 export const UserPostsFeed: React.FC<TUserPostsFeed> = ({ authorId }) => {
-  const { data, isLoading } = api.posts.getPostsByAuthorId.useQuery({
+  const { data, isLoading } = api.posts.getByAuthorId.useQuery({
     authorId,
   });
 

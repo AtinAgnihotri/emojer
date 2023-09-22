@@ -1,6 +1,3 @@
-import { clerkClient } from "@clerk/nextjs";
-import { Post } from "@prisma/client";
-
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -15,7 +12,6 @@ export const postsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.db.post.findMany({
       take: 100,
-      //   where: {authorId: }
       orderBy: {
         createdAt: "desc",
       },
@@ -24,7 +20,7 @@ export const postsRouter = createTRPCRouter({
     return await addUsersDataToPosts(posts);
   }),
 
-  getPostsByAuthorId: publicProcedure
+  getByAuthorId: publicProcedure
     .input(
       z.object({
         authorId: z.string(),
@@ -40,6 +36,27 @@ export const postsRouter = createTRPCRouter({
       });
 
       return await addUsersDataToPosts(posts);
+    }),
+
+  getPostByPostID: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.db.post.findUnique({
+        where: { id: input.postId },
+      });
+
+      if (!post)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Can't find post with id ${input.postId}`,
+        });
+
+      const [postWithUserData] = await addUsersDataToPosts([post]);
+      return postWithUserData;
     }),
 
   createPost: privateProcedure

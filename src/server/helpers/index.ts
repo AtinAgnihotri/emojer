@@ -1,9 +1,13 @@
 import { clerkClient } from "@clerk/nextjs";
 import type { User } from "@clerk/nextjs/dist/types/server";
 import { Post } from "@prisma/client";
+import { createServerSideHelpers } from "@trpc/react-query/server";
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { appRouter } from "~/server/api/root";
+import { db } from "~/server/db";
+import superjson from "superjson";
 
 export type FilteredUserResource = {
   id: string;
@@ -49,3 +53,10 @@ export const addUsersDataToPosts = async (posts: Post[]) => {
     };
   });
 };
+
+export const generateSSGHelper = () =>
+  createServerSideHelpers({
+    router: appRouter,
+    ctx: { db, currentUserId: null },
+    transformer: superjson,
+  });

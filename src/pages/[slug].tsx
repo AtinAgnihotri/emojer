@@ -1,13 +1,10 @@
 import Head from "next/head";
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { appRouter } from "~/server/api/root";
-import { db } from "~/server/db";
-import superjson from "superjson";
 import type { GetStaticProps, NextPage } from "next";
 import { api } from "~/utils/api";
 import Layout from "~/components/Layout";
 import { UserImage } from "~/components/Profile";
 import { UserPostsFeed } from "~/components/Posts";
+import { generateSSGHelper } from "~/server/helpers";
 
 type PageProps = { username: string };
 
@@ -43,11 +40,7 @@ const ProfilePage: NextPage<PageProps> = ({ username }) => {
 export default ProfilePage;
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const ssg = createServerSideHelpers({
-    router: appRouter,
-    ctx: { db, currentUserId: null },
-    transformer: superjson,
-  });
+  const ssg = generateSSGHelper();
 
   const slug = context.params?.slug;
 
