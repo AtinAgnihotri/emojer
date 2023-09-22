@@ -1,17 +1,28 @@
 import Image from "next/image";
 
-export const UserImage: React.FC<{ url: string; userName: string | null }> = ({
+type TUserImage = {
+  url: string;
+  userName: string | null;
+  size?: number;
+  className?: string;
+};
+
+export const UserImage: React.FC<TUserImage> = ({
   url,
   userName,
+  size,
+  className,
 }) => {
   if (!url) return null;
+  const imgSize: `${number}` = `${size ?? 64}`;
+  console.log("Image size", imgSize);
   return (
     <Image
       src={url}
       alt={`${userName}-profile-image`}
-      className="h-16 w-16 rounded-full"
-      width="64"
-      height="64"
+      className={`rounded-full ${className}`}
+      width={imgSize}
+      height={imgSize}
     />
   );
 };
