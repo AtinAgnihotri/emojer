@@ -1,0 +1,25 @@
+name: Typecheck Next.js
+
+on:
+  push:
+    branches:
+      - main # Adjust this to the default branch of your repository
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18 # You can adjust the Node.js version as needed
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run typechecks
+        run: npm run typecheck # Replace with your actual typechecking script/command
