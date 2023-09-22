@@ -1,17 +1,17 @@
-import { RouterOutputs, api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import { LoadingSpinner } from "./Loading";
 import Link from "next/link";
 import { UserImage } from "./Profile";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Post } from "@prisma/client";
-import { FilteredUserResource } from "~/server/helpers";
+import { type Post } from "@prisma/client";
+import { type FilteredUserResource } from "~/server/helpers";
 import React from "react";
 dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
-const PostView: React.FC<PostWithUser> = ({ post, author }) => {
+export const PostView: React.FC<PostWithUser> = ({ post, author }) => {
   const userSlug = `/@${author.name}`;
   const postSlug = `/post/${post.id}`;
 
