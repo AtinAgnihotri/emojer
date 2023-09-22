@@ -12,5 +12,5 @@ Tech Used:
   - [Prisma](https://prisma.io)
   - [Tailwind CSS](https://tailwindcss.com)
   - [tRPC](https://trpc.io)
-- [PlanetScale]()
+- [PlanetScale](https://planetscale.com/)
 - [Clerk](https://clerk.com/) (As an alternative to NextAuth)

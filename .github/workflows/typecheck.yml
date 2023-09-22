@@ -5,6 +5,9 @@ on:
     branches:
       - main # Adjust this to the default branch of your repository
 
+env:
+  DATABASE_URL: "https://www.fakedb.com"
+
 jobs:
   typecheck:
     runs-on: ubuntu-latest
