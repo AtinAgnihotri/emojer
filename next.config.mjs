@@ -20,6 +20,17 @@ const config = {
   images: {
     domains: ["img.clerk.com", "img.clerk.dev"],
   },
+
+  // Added a CI step for this on github
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  // Prettier on Dx machines
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  swcMinify: true,
 };
 
 export default config;
